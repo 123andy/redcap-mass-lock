@@ -1,0 +1,22 @@
+{
+    "name": "Mass Record Locking",
+    "namespace": "BCCHR\\RedcapMassLock",
+    "description": "An External Module that provides an interface to lock multiple records at once.",
+    "authors": [
+        {
+            "name": "Ashley Lee",
+            "email": "alee2@bcchr.ca",
+            "institution": "BC Children's Hospital Research Institute"
+        }
+    ],
+    "links": {
+        "project": [
+            {
+                "name": "Mass Record Locking",
+                "url": "index.php",
+                "icon": "fas fa-calendar"
+            }
+        ]
+    },
+    "framework-version": 3
+}
