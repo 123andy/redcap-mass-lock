@@ -18,5 +18,11 @@
             }
         ]
     },
-    "framework-version": 3
+    "framework-version": 3,
+    "compatibility": {
+        "php-version-min": "",
+        "php-version-max": "",
+        "redcap-version-min": "9.5.30",
+        "redcap-version-max": ""
+    }
 }

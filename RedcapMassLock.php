@@ -31,6 +31,7 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         // Get the current Instuments
         $instrument_names = REDCap::getInstrumentNames();
         $instrument_options = array();
+        $instrument = $_POST["instrument"];
         foreach ($instrument_names as $k => $v) {
             $instrument_options[] = "<option value='$k'" .
                 ($k == $instrument ? " selected='selected'":"") .
@@ -43,6 +44,7 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         // Get the current Events
         $events = REDCap::getEventNames(true);
         $event_options = array();
+        $event = $_POST["event"];
         if ($events) {
             foreach ($events as $this_event) {
                 $event_options[] = "<option value='$this_event'" .
@@ -117,9 +119,16 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
 
         if (isset($_POST['LockNow'])) {
             // Actually lock the records!
-            $this->framework->records->lock($records_to_lock);
+            $values_array = array();
+            foreach($records_to_lock as $record) {
+                $values_array[] = "($project_id,'$record',$event_id,'$instrument','$userid','" . date('Y-m-d H:i:s') . "')";
+            }
+            $lock_sql = "insert into redcap_locking_data (project_id,record,event_id,form_name,username,timestamp) ".
+                "values " . implode(",",$values_array);
+            $q = db_query($lock_sql);
             $output[] = "<strong>The following records were locked for event $event on instrument $instrument:</strong><div><ul><li>" . implode(", ", $records_to_lock) . "</li></ul></div>";
             $output[] = "<style>div.Initial, div.Lock, div.UnLock, div.UnLockNow {display:none;}</style>";
+            $output[] = "Result: " . json_encode($q);
         }
         return $output;
     }
@@ -172,7 +181,7 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
                     $values .= ",";
                 }
             }
-            $lock_sql = "delete from redcap_locking_data where project_id = $project_id and record in ($values)";
+            $lock_sql = "delete from redcap_locking_data where project_id = $project_id and event_id = $event_id and form_name = '$instrument' and record in ($values)";
             $q = $this->query($lock_sql);
             $output[] = "<strong>The following records were unlocked for event $event on instrument $instrument:</strong><div><ul><li>" . implode(", ", $records_to_unlock) . "</li></ul></div>";
             $output[] = "<style>div.Initial, div.Lock, div.LockNow, div.UnLock {display:none;}</style>";
