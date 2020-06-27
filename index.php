@@ -10,6 +10,7 @@ include APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
 renderPageTitle("<img src='".APP_PATH_IMAGES."application_view_icons.png' class='imgfix2'> Run a bunch of DETs!");
 
 $redcap_mass_lock = new BCCHR\RedcapMassLock\RedcapMassLock();
+$redcap_mass_lock->setRecords();
 
 # Inject the plugin tabs (must come after including tabs.php)
 include APP_PATH_DOCROOT . "ProjectSetup/tabs.php";

@@ -7,6 +7,14 @@ use Project;
 
 class RedcapMassLock extends \ExternalModules\AbstractExternalModule
 {
+    private $records;
+
+    function setRecords() {
+        $user_rights = $this->framework->getUser(USERID)->getRights();
+        $this->records = REDCap::getData('array',NULL,$this->framework->getRecordIdField(),NULL,$user_rights["group_id"],FALSE,TRUE);
+        $this->records = array_keys($record_data);
+    }
+
     function injectPluginTabs($pid, $plugin_path, $plugin_name) {
         $msg = "
         <script type='text/javascript'>
@@ -57,11 +65,8 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
 
     function getCheckBoxOptions() {
         $cbx_array = array();
-        $user_rights = $this->framework->getUser(USERID)->getRights();
-        $record_data = REDCap::getData('array',NULL,$this->framework->getRecordIdField(),NULL,$user_rights["group_id"],FALSE,TRUE);
-        $records = array_keys($record_data);
         $post_records = $_POST['records'];
-        foreach ($records as $record) {
+        foreach ($this->records as $record) {
             $cbx_array[] = "<input type='checkbox' name='records[]' value='$record' " .
                 (in_array($record, $post_records) ? "checked" : "" ) .
                 ">$record";
@@ -71,10 +76,7 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
 
     function getMaxLength() {
         $max_length = 0;
-        $user_rights = $this->framework->getUser(USERID)->getRights();
-        $record_data = REDCap::getData('array',NULL,$this->framework->getRecordIdField(),NULL,$user_rights["group_id"],FALSE,TRUE);
-        $records = array_keys($record_data);
-        foreach ($records as $record) {
+        foreach ($this->records as $record) {
             $max_length = max($max_length,strlen($record));
         }
         return $max_length + 3; // add space for checkbox
@@ -204,10 +206,7 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
             $post_records = $_POST['records'];
 
             // Filter out any invalid records
-            $user_rights = $this->framework->getUser(USERID)->getRights(array($project_id));
-            $record_data = REDCap::getData('array',NULL,$this->framework->getRecordIdField(),NULL,$user_rights["group_id"],FALSE,TRUE);
-            $records = array_keys($record_data);
-            $record_list = array_intersect($post_records,$records);
+            $record_list = array_intersect($post_records,$this->records);
 
             if (isset($_POST['Lock']) OR isset($_POST['LockNow'])) {
                 $output = $this->lockRecords($record_list, $instrument, $event, $event_id, $project_id);
