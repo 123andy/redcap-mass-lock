@@ -1,12 +1,17 @@
 {
     "name": "Mass Record Locking",
     "namespace": "BCCHR\\RedcapMassLock",
-    "description": "An External Module that provides an interface to lock multiple records at once.",
+    "description": "An external module for mass locking records. Is compatible with both classic and longitudinal projects, and only accessible by superusers and users with design rights on the project.",
     "authors": [
         {
             "name": "Ashley Lee",
             "email": "alee2@bcchr.ca",
             "institution": "BC Children's Hospital Research Institute"
+        },
+        {
+            "name": "Andy Martin",
+            "email": "andy123@stanford.edu",
+            "institution": "Stanford University"
         }
     ],
     "links": {

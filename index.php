@@ -1,6 +1,5 @@
 <?php
 // Connect
-require_once "../../redcap_connect.php";
 require_once "RedcapMassLock.php";
 
 // Page header

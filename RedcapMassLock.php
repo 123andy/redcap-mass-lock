@@ -6,6 +6,9 @@ use REDCap;
 
 class RedcapMassLock extends \ExternalModules\AbstractExternalModule
 {
+    /**
+     * Array of all records in current project, filtered ny current user's DAG.
+     */
     private $records;
 
     function setRecords() {
@@ -14,6 +17,9 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         $this->records = array_keys($record_data);
     }
 
+    /**
+     * Retrieve tabs on Project Home, and add a tab for the module at the end. Inject them into the page. 
+     */
     function injectPluginTabs($pid, $plugin_path, $plugin_name) {
         $msg = "
         <script type='text/javascript'>
@@ -24,16 +30,10 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         </script>";
         echo $msg;
     }
-    
-    #display an error from scratch
-    function showError($msg) {
-            $HtmlPage = new HtmlPage();
-            $HtmlPage->PrintHeaderExt();
-            echo "<div class='red'>$msg</div>";
-            //Display the project footer	
-            require_once APP_PATH_DOCROOT . 'ProjectGeneral/footer.php';
-    }
 
+    /**
+     * Retrieves all instruments in the current project.
+     */
     function getInstruments() {
         // Get the current Instuments
         $instrument_names = REDCap::getInstrumentNames();
@@ -47,6 +47,9 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         return $instrument_options;
     }
 
+    /**
+     * Retrieves all events in the current project.
+     */
     function getEvents() {
         // Get the current Events
         $events = REDCap::getEventNames(true);
@@ -62,6 +65,9 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         return $event_options;
     }
 
+    /**
+     * Formats all the project records into checkboxes, for user input. 
+     */
     function getCheckBoxOptions() {
         $cbx_array = array();
         $post_records = $_POST['records'];
@@ -81,6 +87,9 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         return $max_length + 3; // add space for checkbox
     }
 
+    /**
+     * Handles locking record functionality.
+     */
     function lockRecords($record_list, $instrument, $event, $event_id, $project_id) {
         // See if any are already locked?
         $sql = "select * 
@@ -135,6 +144,9 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         return $output;
     }
 
+    /**
+     * Handles unlocking record functionality.
+     */
     function unlockRecords($record_list, $instrument, $event, $event_id, $project_id) {
         // See if any are already unlocked?
         $sql = "select * 
@@ -193,6 +205,9 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         return $output;
     }
 
+    /**
+     * Handles POST functionality whenever user submits the page.
+     */
     function handlePost() {
         $project_id = $this->getProjectId();
 
@@ -203,7 +218,7 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         if (REDCap::isLongitudinal()) {
             $event_id = REDCap::getEventIdFromUniqueEvent($event);
         }
-        else {
+        else { // Grab event id for classic projects' hidden "Event 1".
             $sql = "select distinct e.event_id from redcap_events_metadata e, redcap_events_arms a,
             redcap_metadata m where a.arm_id = e.arm_id and a.project_id = m.project_id
             and m.project_id = " . $project_id;
