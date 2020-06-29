@@ -1,7 +1,5 @@
-# redcap-mass-lock
-A plugin for mass-locking records
+# Mass Record Locking
+An external module for mass locking records. Is compatible with both classic and longitudinal projects.
 
-## Place in your plugins folder.  It currently expects to be two levels deep
-e.g. /plugins/utilities/massLock.php
-
-## Create a bookmark link to the plugin and be sure to include the pid checkbox in the link.
+## Limitations
+1. Incompatible with repeatable events/instruments. Only locks the first instance of a repeatable instrument. 
