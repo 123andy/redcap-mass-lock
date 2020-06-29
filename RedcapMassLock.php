@@ -3,7 +3,6 @@
 namespace BCCHR\RedcapMassLock;
 
 use REDCap;
-use Project;
 
 class RedcapMassLock extends \ExternalModules\AbstractExternalModule
 {
@@ -11,7 +10,7 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
 
     function setRecords() {
         $user_rights = $this->framework->getUser(USERID)->getRights();
-        $this->records = REDCap::getData('array',NULL,$this->framework->getRecordIdField(),NULL,$user_rights["group_id"],FALSE,TRUE);
+        $record_data = REDCap::getData('array',NULL,$this->framework->getRecordIdField(),NULL,$user_rights["group_id"],FALSE,TRUE);
         $this->records = array_keys($record_data);
     }
 
@@ -91,6 +90,7 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
                 and event_id = $event_id
                 and form_name = '$instrument'
                 and record in ('" . implode("','", $record_list) . "')";
+
         $q = $this->query($sql);
         $already_locked_records = $already_locked_msg = array();
         while ($row = db_fetch_assoc($q)) {
@@ -144,6 +144,7 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
                 and event_id = $event_id
                 and form_name = '$instrument'
                 and record in ('" . implode("','", $record_list) . "')";
+                
         $q = $this->query($sql);
         $already_unlocked_records = $already_unlocked_msg = array();
         while ($row = db_fetch_assoc($q)) {
@@ -198,7 +199,19 @@ class RedcapMassLock extends \ExternalModules\AbstractExternalModule
         // Get Inputs
         $instrument = isset($_POST['instrument']) ? $_POST['instrument'] : "";
         $event = isset($_POST['event']) ? $_POST['event'] : '';
-        $event_id = REDCap::getEventIdFromUniqueEvent($event);
+
+        if (REDCap::isLongitudinal()) {
+            $event_id = REDCap::getEventIdFromUniqueEvent($event);
+        }
+        else {
+            $sql = "select distinct e.event_id from redcap_events_metadata e, redcap_events_arms a,
+            redcap_metadata m where a.arm_id = e.arm_id and a.project_id = m.project_id
+            and m.project_id = " . $project_id;
+            $q = $this->query($sql);
+            while ($row = mysqli_fetch_assoc($q)) {
+                $event_id = $row["event_id"];
+            }
+        }
 
         // Handle Post
         $post_records = array();

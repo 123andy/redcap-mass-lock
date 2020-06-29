@@ -43,9 +43,13 @@ $output = $redcap_mass_lock->handlePost();
 				<strong>Select Records</strong>
 			</div>
 			<div class="panel panel-body wrapper">
+				<?php if (empty($cbx_array)): ?>
+				<p>No records to lock</p>
+				<?php else:?>
 				<ul>
 					<li><?php print implode("</li><li>", $cbx_array) ?></li>
 				</ul>
+				<?php endif;?>
 				<br/>
 			</div>
 			<div class="panel panel-footing text-center">
