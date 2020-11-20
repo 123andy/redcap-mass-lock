@@ -6,7 +6,7 @@ require_once "RedcapMassLock.php";
 include APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
 
 // Page title
-renderPageTitle("<img src='".APP_PATH_IMAGES."application_view_icons.png' class='imgfix2'> Run a bunch of DETs!");
+renderPageTitle("<img src='".APP_PATH_IMAGES."application_view_icons.png' class='imgfix2'> Mass Record Locking");
 
 $redcap_mass_lock = new BCCHR\RedcapMassLock\RedcapMassLock();
 $redcap_mass_lock->setRecords();
